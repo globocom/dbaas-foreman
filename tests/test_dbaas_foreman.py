@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from dbaas_foreman.foreman_provider import ForemanProvider
-from factory import FakeForeman
+from .factory import FakeForeman
 
 
 def assert_last_call(foreman_provider, method, params):

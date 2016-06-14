@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
-from foreman.client import Foreman, ForemanException
+from foreman.client import (Foreman, ForemanException)
 
 LOG = logging.getLogger(__name__)
 
