@@ -11,7 +11,7 @@ class ForemanProvider(object):
         foreman_client_class=Foreman
     ):
         self._foreman_url = foreman_url
-        self._foreman_username = foreman_username,
+        self._foreman_username = foreman_username
         self._foreman_password = foreman_password
         self._api_version = api_version
         self._foreman_client_class = foreman_client_class
@@ -42,11 +42,10 @@ class ForemanProvider(object):
 
         return result
 
-    def search_host(self, host_name):
-        result = self._do_show(resource='hosts', resource_id=host_name)
-        return result.get('results', [])
+    def _search_host(self, host_name):
+        return self._do_show(resource='hosts', resource_id=host_name)
 
-    def search_host_group(self, host_group_name):
+    def _search_puppet_class(self, puppet_class_name):
         return self._do_show(
-            resource='hostgroups', resource_id=host_group_name
+            resource='puppetclasses', resource_id=puppet_class_name
         )
