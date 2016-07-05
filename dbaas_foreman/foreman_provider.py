@@ -71,5 +71,6 @@ class ForemanProvider(object):
         response = self._foreman_client.hosts.parameters_create(
             parameters, host_id=host_name
         )
+
         if not response:
             raise exceptions.HostParameterNotCreatedError()
