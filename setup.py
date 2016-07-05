@@ -18,7 +18,7 @@ with open('requirements_test.txt') as requirements_test_file:
 
 setup(
     name='dbaas_foreman',
-    version='0.1.0',
+    version='0.1.1',
     description="DBaaS Foreman is a simple foreman api wrapper for DBaaS",
     long_description=readme + '\n\n' + history,
     author="Felippe da Motta Raposo",
