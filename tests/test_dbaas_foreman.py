@@ -2,8 +2,9 @@
 # -*- coding: utf-8 -*-
 import pytest
 from dbaas_foreman.foreman_provider import ForemanProvider
+from dbaas_foreman.dbaas_api import DatabaseAsAServiceApi
 from dbaas_foreman import exceptions
-from .factory import FakeForeman
+from .factory import FakeForeman, set_up_databaseinfra, FakeCredential
 
 
 def assert_last_call(foreman_provider, method, params, args=()):
@@ -16,10 +17,10 @@ def assert_last_call(foreman_provider, method, params, args=()):
 
 @pytest.fixture
 def foreman_provider():
+    databaseinfra = set_up_databaseinfra()
+    dbaas_api = DatabaseAsAServiceApi(databaseinfra, FakeCredential())
     return ForemanProvider(
-        foreman_url='http://example.does.not.exists.com',
-        foreman_username='a_ruby_fan_boy',
-        foreman_password='I am',
+        dbaas_api=dbaas_api,
         foreman_client_class=FakeForeman
     )
 

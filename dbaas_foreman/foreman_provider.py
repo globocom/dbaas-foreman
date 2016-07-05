@@ -8,13 +8,11 @@ LOG = logging.getLogger(__name__)
 
 
 class ForemanProvider(object):
-    def __init__(
-        self, foreman_url, foreman_username, foreman_password, api_version=2,
-        foreman_client_class=Foreman
-    ):
-        self._foreman_url = foreman_url
-        self._foreman_username = foreman_username
-        self._foreman_password = foreman_password
+    def __init__(self, dbaas_api, api_version=2, foreman_client_class=Foreman):
+        self._dbaas_api = dbaas_api
+        self._foreman_url = self._dbaas_api.endpoint
+        self._foreman_username = self._dbaas_api.user
+        self._foreman_password = self._dbaas_api.password
         self._api_version = api_version
         self._foreman_client_class = foreman_client_class
 
@@ -77,8 +75,12 @@ class ForemanProvider(object):
             raise exceptions.HostParameterNotCreatedError()
 
     def setup_database_dscp(
-        self, hosts_fqdn, vip, dsrc, port, attempts, sleep_time=10
+        self, hosts_fqdn, vip_ip, dsrc, port, attempts=50, sleep_time=10
     ):
+        puppet_class_name = self._dbaas_api.dscp_foreman_class
+        dscp_foreman_param_name = self._dbaas_api.dscp_foreman_param_name
+        dscp_foreman_param_value = '{}:{}:{}'.format(vip_ip, dsrc, port)
+
         for fqdn in hosts_fqdn:
             attempt = 0
             while attempt <= attempts:
@@ -90,10 +92,10 @@ class ForemanProvider(object):
                 else:
                     if response:
                         self._add_puppet_class_to_host(
-                            fqdn, 'puppetclass_name'
+                            fqdn, puppet_class_name
                         )
                         self._add_parameter_to_host(
-                            fqdn, 'param_name', 'param_value'
+                            fqdn, dscp_foreman_param_name, dscp_foreman_param_value
                         )
                         break
                 sleep(sleep_time)
