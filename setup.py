@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from dbaas_foreman import __version__
 
 from setuptools import setup
 
@@ -18,7 +19,7 @@ with open('requirements_test.txt') as requirements_test_file:
 
 setup(
     name='dbaas_foreman',
-    version='0.1.1',
+    version=__version__,
     description="DBaaS Foreman is a simple foreman api wrapper for DBaaS",
     long_description=readme + '\n\n' + history,
     author="Felippe da Motta Raposo",
