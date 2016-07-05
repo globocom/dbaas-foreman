@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
+from time import sleep
 from foreman.client import (Foreman, ForemanException)
 from dbaas_foreman import exceptions
 
@@ -74,3 +75,31 @@ class ForemanProvider(object):
 
         if not response:
             raise exceptions.HostParameterNotCreatedError()
+
+    def setup_database_dscp(
+        self, hosts_fqdn, vip, dsrc, port, attempts, sleep_time=10
+    ):
+        for fqdn in hosts_fqdn:
+            attempt = 0
+            while attempt <= attempts:
+                attempt += 1
+                try:
+                    response = self._search_host(fqdn)
+                except Exception as e:
+                    LOG.warn(e)
+                else:
+                    if response:
+                        self._add_puppet_class_to_host(
+                            fqdn, 'puppetclass_name'
+                        )
+                        self._add_parameter_to_host(
+                            fqdn, 'param_name', 'param_value'
+                        )
+                        break
+                sleep(sleep_time)
+            else:
+                raise exceptions.HostNotFoundException(
+                    "Host {} not found".format(fqdn)
+                )
+        else:
+            return True
