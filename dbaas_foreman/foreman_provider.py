@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 from foreman.client import (Foreman, ForemanException)
+from dbaas_foreman import exceptions
 
 LOG = logging.getLogger(__name__)
 
@@ -49,3 +50,26 @@ class ForemanProvider(object):
         return self._do_show(
             resource='puppetclasses', resource_id=puppet_class_name
         )
+
+    def _add_puppet_class_to_host(self, host_name, puppet_class_name):
+        puppet_class = self._search_puppet_class(puppet_class_name)
+
+        if not puppet_class:
+            raise exceptions.PuppetClassNotFound
+
+        response = self._foreman_client.hosts.host_classes_create(
+            host_id=host_name,
+            puppetclass_id=puppet_class['id']
+        )
+
+        if not response:
+            raise exceptions.HostPuppetClassNotCreatedError()
+
+    def _add_parameter_to_host(self, host_name, parameter_name, parameter_value):
+        parameters = {'name': parameter_name, 'value': parameter_value}
+
+        response = self._foreman_client.hosts.parameters_create(
+            parameters, host_id=host_name
+        )
+        if not response:
+            raise exceptions.HostParameterNotCreatedError()
