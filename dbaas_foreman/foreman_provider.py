@@ -75,33 +75,29 @@ class ForemanProvider(object):
             raise exceptions.HostParameterNotCreatedError()
 
     def setup_database_dscp(
-        self, hosts_fqdn, vip_ip, dsrc, port, attempts=50, sleep_time=10
+        self, fqdn, vip_ip, dsrc, port, attempts=50, sleep_time=10
     ):
         puppet_class_name = self._dbaas_api.dscp_foreman_class
         dscp_foreman_param_name = self._dbaas_api.dscp_foreman_param_name
         dscp_foreman_param_value = '{}:{}:{}'.format(vip_ip, dsrc, port)
 
-        for fqdn in hosts_fqdn:
-            attempt = 0
-            while attempt <= attempts:
-                attempt += 1
-                try:
-                    response = self._search_host(fqdn)
-                except Exception as e:
-                    LOG.warn(e)
-                else:
-                    if response:
-                        self._add_puppet_class_to_host(
-                            fqdn, puppet_class_name
-                        )
-                        self._add_parameter_to_host(
-                            fqdn, dscp_foreman_param_name, dscp_foreman_param_value
-                        )
-                        break
-                sleep(sleep_time)
+        attempt = 0
+        while attempt <= attempts:
+            attempt += 1
+            try:
+                response = self._search_host(fqdn)
+            except Exception as e:
+                LOG.warn(e)
             else:
-                raise exceptions.HostNotFoundException(
-                    "Host {} not found".format(fqdn)
-                )
+                if response:
+                    self._add_puppet_class_to_host(fqdn, puppet_class_name)
+                    self._add_parameter_to_host(
+                        fqdn, dscp_foreman_param_name, dscp_foreman_param_value
+                    )
+                    return True
+
+            sleep(sleep_time)
         else:
-            return True
+            raise exceptions.HostNotFoundException(
+                "Host {} not found".format(fqdn)
+            )
