@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 from time import sleep
-from foreman.client import (Foreman, ForemanException)
+from foreman.client import Foreman, ForemanException
 from dbaas_foreman import exceptions
 
 LOG = logging.getLogger(__name__)
@@ -56,20 +56,33 @@ class ForemanProvider(object):
         if not puppet_class:
             raise exceptions.PuppetClassNotFound
 
-        response = self._foreman_client.hosts.host_classes_create(
-            host_id=host_name,
-            puppetclass_id=puppet_class['id']
-        )
+        response = None
+        try:
+            response = self._foreman_client.hosts.host_classes_create(
+                host_id=host_name,
+                puppetclass_id=puppet_class['id']
+            )
+        except ForemanException as e:
+            content = e.res.json()
+            err = 'Validation failed: Puppet class has already been taken'
+            if content["error"]["message"] == err:
+                return
 
         if not response:
             raise exceptions.HostPuppetClassNotCreatedError()
 
     def _add_parameter_to_host(self, host_name, parameter_name, parameter_value):
         parameters = {'name': parameter_name, 'value': parameter_value}
-
-        response = self._foreman_client.hosts.parameters_create(
-            parameters, host_id=host_name
-        )
+        response = None
+        try:
+            response = self._foreman_client.hosts.parameters_create(
+                parameters, host_id=host_name
+            )
+        except ForemanException as e:
+            content = e.res.json()
+            err = 'Name has already been taken'
+            if content["error"]["full_messages"][0] == err:
+                return
 
         if not response:
             raise exceptions.HostParameterNotCreatedError()
