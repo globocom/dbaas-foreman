@@ -31,6 +31,17 @@ class ForemanProvider(object):
 
         return result
 
+    def _do_destroy(self, resource, resource_id):
+        try:
+            result = getattr(
+                self._foreman_client, resource
+            ).destroy(id=resource_id)
+        except ForemanException as e:
+            LOG.warn(e)
+            result = {}
+
+        return result
+
     def _do_show(self, resource, resource_id):
         try:
             result = getattr(
@@ -114,3 +125,23 @@ class ForemanProvider(object):
             raise exceptions.HostNotFoundException(
                 "Host {} not found".format(fqdn)
             )
+
+    def delete_host(
+        self, dns, attempts=3, sleep_time=10
+    ):
+        attempt = 0
+        while attempt <= attempts:
+            attempt += 1
+            try:
+                response = self._search_host(dns)
+            except Exception as e:
+                LOG.warn(e)
+            else:
+                if not response:
+                    return False
+                return self._do_destroy(resource="hosts", resource_id=dns)
+
+            sleep(sleep_time)
+        else:
+            LOG.warn("Host {} not found".format(dns))
+            return True
