@@ -1,8 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from dbaas_foreman import __version__
-
 from setuptools import setup
+
+__author__ = 'Felippe da Motta Raposo'
+__email__ = 'raposo.felippe@gmail.com'
+__version__ = '0.1.8'
+
 
 with open('README.rst') as readme_file:
     readme = readme_file.read()
