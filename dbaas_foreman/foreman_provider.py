@@ -93,7 +93,14 @@ class ForemanProvider(object):
             content = e.res.json()
             err = 'Name has already been taken'
             if content["error"]["full_messages"][0] == err:
-                return
+                warn = '{} has already been taken on {}'.format(
+                    parameter_name, host_name
+                )
+                warn += '. It will update parameter'
+                LOG.warn('warn')
+                response = self._foreman_client.hosts.parameters_host_id_updateparameters(
+                    parameters, host_id=host_name, id=parameter_name
+                )
 
         if not response:
             raise exceptions.HostParameterNotCreatedError()
