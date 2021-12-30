@@ -76,8 +76,12 @@ servedocs: docs ## compile the docs watching for changes
 	watchmedo shell-command -p '*.rst' -c '$(MAKE) -C docs html' -R -D .
 
 release: ## package and upload a release
-	python setup.py sdist upload
-	python setup.py bdist_wheel upload
+	python setup.py sdist bdist_wheel
+	twine upload dist/*
+
+release_globo:
+	python setup.py sdist bdist_wheel
+	twine upload --repository-url https://artifactory.globoi.com/artifactory/api/pypi/pypi-local dist/*
 
 dist:  ## builds source and wheel package
 	python setup.py sdist
