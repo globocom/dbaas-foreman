@@ -4,7 +4,7 @@ from setuptools import setup
 
 __author__ = 'Felippe da Motta Raposo'
 __email__ = 'raposo.felippe@gmail.com'
-__version__ = '0.1.8'
+__version__ = '0.1.9'
 
 
 with open('README.rst') as readme_file:
